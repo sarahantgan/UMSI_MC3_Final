@@ -20,18 +20,36 @@ color_scale = [
     "#f8f9fa", "#e3f2f4", "#c6e1e4", "#99ccd2", "#66b7bf", 
     "#3aa3ad", "#1a8a97", "#11727f", "#0a5a68"
 ]
+category_colors = {
+    'Low': '#d4f1f4',
+    'Medium': '#66b7bf',  
+    'High': '#11727f'   
+}
 
-# Demographic columns
-demographic_cols = [
-    'Total Population',
-    'Population Density (per km2)',
-    'Median Income (Dollars)',
-    'Percent of Non-White',
-    'Rate of OBGYNs (per 100,000 population)',
-    'Total # of OBGYNs',
-    'Total Consultations'
-]
+numeric_demographics = {
+    'Total Population': 'Total Population',
+    'Population Density (per km2)': 'Population Density (per km²)',
+    'Median Income (Dollars)': 'Median Income (USD)',
+    'Percent of Non-White': 'Percent of Non-White Population',
+    'Rate of OBGYNs (per 100,000 population)': 'Rate of OBGYNs (per 100K)',
+    'Total # of OBGYNs': 'Total Number of OBGYNs',
+    'Total Consultations': 'Total MC3 Consultations'
+}
 
+category_demographics = {
+    'income_category': 'Income Category (Low/Med/High)',
+    'obgyn_category': 'OBGYN Access Category',
+    'nonwhite_category': 'Percent Non-White Category',
+    'density_category': 'Population Density Category'
+}
+
+# Combine for dropdown
+demographic_cols = (
+    [{'label': label, 'value': key} for key, label in numeric_demographics.items()] +
+    [{'label': label, 'value': key} for key, label in category_demographics.items()]
+)
+
+# Initialize Dash app
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX])
 app.title = "MC3 Dashboard"
 
@@ -49,7 +67,7 @@ app.layout = dbc.Container([
             html.H3(f"{int(mc3['Total # of OBGYNs'].sum()):,}", className="card-text")
         ])), width=4),
         dbc.Col(dbc.Card(dbc.CardBody([
-            html.H5("Median Income (Avg)", className="card-title"),
+            html.H5("Median Income", className="card-title"),
             html.H3(f"${int(mc3['Median Income (Dollars)'].mean()):,}", className="card-text")
         ])), width=4)
     ], className="mb-4"),
@@ -57,14 +75,14 @@ app.layout = dbc.Container([
     # Main content (map and selection elements)
     dbc.Row([
         dbc.Col([
-            dcc.Graph(id='map-graph', style={'height': '600px'}, config={'displayModeBar': False})
+            dcc.Graph(id='map-graph', style={'height': '800px'}, config={'displayModeBar': False})
 
         ], md=8),
         dbc.Col([
             html.Label("Select a Demographic to Visualize", className="fw-bold"),
             dcc.Dropdown(
                 id='demographic-dropdown',
-                options=[{'label': col, 'value': col} for col in demographic_cols],
+                options=demographic_cols,
                 value='Rate of OBGYNs (per 100,000 population)'
             ),
             html.Label("Click on the map OR select a county below to view more details", className="fw-bold mt-3"),
@@ -79,7 +97,7 @@ app.layout = dbc.Container([
                 html.H5(id='selected-county', className="text-info fw-bold mt-3"),
                 html.Div(id='sidebar-county-details')
             ])
-        ], md=4)
+        ], md=4, style={'paddingTop': 0})
     ], className="mb-4"),
 
     # Comparison and download row
@@ -95,6 +113,7 @@ app.layout = dbc.Container([
             #html.Button("Download Selected", id="download-button", className="btn btn-outline-primary btn-sm my-2"),
             #dcc.Download(id="download-data"),
             dcc.Graph(id='multi-demographics-chart'),
+            html.P("Note: Unavailable data will show up as 0", className="text-muted mt-2"),
             html.P("Note: These values are raw counts or rates per county. No adjustments for population have been made.", className="text-muted mt-2"),
             html.P("Counties with a Rate of OBGYNs under 5 per 100K may indicate areas with limited provider access.", className="text-muted")
         ])
@@ -105,29 +124,44 @@ app.layout = dbc.Container([
     Output('map-graph', 'figure'),
     Input('demographic-dropdown', 'value')
 )
+
 def update_map(selected_demo):
-    fig = px.choropleth(
-        mc3,
-        geojson=geojson_data,
-        locations='Name',
-        featureidkey="properties.Name",
-        color=selected_demo,
-        color_continuous_scale=color_scale,
-        hover_name='Name',
-        hover_data={'Total Consultations': True, selected_demo: True},
-        scope="usa",
-        labels={selected_demo: selected_demo}
-    )
-    fig.update_geos(fitbounds="locations", visible=False, projection_scale=6)
-    fig.update_layout(
-        margin={"r":0, "t":0, "l":0, "b":0},
-        coloraxis_colorbar=dict(
-            title=selected_demo.replace("(", "<br>("),
-            tickfont=dict(size=10),
-            titlefont=dict(size=11),
-            len=0.4, y=0.5
+    if selected_demo in category_demographics:
+        fig = px.choropleth(
+            mc3,
+            geojson=geojson_data,
+            locations='Name',
+            featureidkey="properties.Name",
+            color=selected_demo,
+            color_discrete_map=category_colors,
+            hover_name='Name',
+            hover_data={'Total Consultations': True, selected_demo: True},
+            scope="usa",
+            labels={selected_demo: selected_demo}
         )
-    )
+    else:
+        fig = px.choropleth(
+            mc3,
+            geojson=geojson_data,
+            locations='Name',
+            featureidkey="properties.Name",
+            color=selected_demo,
+            color_continuous_scale=color_scale,
+            hover_name='Name',
+            hover_data={'Total Consultations': True, selected_demo: True},
+            scope="usa",
+            labels={selected_demo: selected_demo}
+        )
+        fig.update_layout(
+            coloraxis_colorbar=dict(
+                title=selected_demo.replace("(", "<br>("),
+                tickfont=dict(size=10),
+                titlefont=dict(size=11),
+                len=0.4, y=0.5
+            )
+        )
+    fig.update_geos(fitbounds="locations", visible=False, projection_scale=6)
+    fig.update_layout(margin={"r":0, "t":0, "l":0, "b":0})
     return fig
 
 @app.callback(

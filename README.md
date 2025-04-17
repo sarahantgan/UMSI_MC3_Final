@@ -1,5 +1,5 @@
-# MC3_UMSI
-===
+# MC3 DASHBOARD
+
 UMSI capstone project with Michigan Medicine - Michigan Clinical Consultation and Care (MC3)
 
 ## Overview

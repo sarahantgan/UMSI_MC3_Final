@@ -1,0 +1,15 @@
+# Ignore CSVs and data files
+*.csv
+mc3_updated.csv
+
+# Ignore virtual environments
+venv/
+.env/
+
+# Ignore Mac system files
+.DS_Store
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+

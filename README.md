@@ -1,44 +1,54 @@
-<<<<<<< HEAD
 # MC3_UMSI
-UMSI capstone project with Michigan Medicine - Michigan Clinical Consultation and Care (MC3) 
 =======
-"""
-# MC3 Dashboard — Michigan County Health Insights
+UMSI capstone project with Michigan Medicine - Michigan Clinical Consultation and Care (MC3)
 
-Welcome to the MC3 Dashboard! This is a data visualization tool designed to help explore healthcare access and demographics across Michigan counties. No technical experience is needed to use it.
+## Overview
+This interactive dashboard provides county-level insights into demographic and healthcare data across the state of Michigan, with a specific focus on MC3 consultations and OBGYN access.
 
----
+## Features
+- **Interactive Map**: Clickable county-level choropleth map for visualizing multiple demographic or healthcare metrics.
+- **Dropdown Controls**:
+  - **Numeric Metrics**: Population, income, OBGYN rates, and more.
+  - **Categorical Metrics**: Income/OBGYN/Non-White/Density categories based on tertiles (Low/Medium/High).
+- **Sidebar Details**: View metric values for a selected county.
+- **Comparison Tool**: Select multiple counties to compare key metrics via a bar chart.
+- **Color Consistency**: All charts and maps use a consistent color scheme matching the MC3 website aesthetic.
+- **Reset Button**: Clear map selections and start over with one click.
 
-## ✅ What You Get
-- An interactive map to explore key demographic and healthcare metrics
-- Drop-downs to select counties or compare multiple ones
-- Clear color-based visualizations and summary text
-- Ability to embed in any website or launch locally
+## Metrics Available
+### Numeric (Raw values)
+- Total Population
+- Population Density (per km²)
+- Median Income (USD)
+- Percent of Non-White Population
+- Rate of OBGYNs (per 100,000 population)
+- Total Number of OBGYNs
+- Total MC3 Consultations
 
----
-
-## 🚀 How to Use This Dashboard (Step-by-Step)
+### Categorical (Tertiles across all MI counties)
+- **Income Category** (Low / Medium / High)
+- **OBGYN Access Category**
+- **Percent Non-White Category**
+- **Population Density Category**
+==========
+## How to Use This Dashboard (Step-by-Step)
 
 ### 1. Install Python (if you don’t already have it)
-Visit https://www.python.org/downloads/ and install Python 3.9 or later. Make sure to check the box **"Add Python to PATH"** during installation.
+Visit https://www.python.org/downloads/ and install Python 3.8 or later. Make sure to check the box **"Add Python to PATH"** during installation.
 
 ---
 
 ### 2. Download or Clone This Project
-Option A: Download the .ZIP file from GitHub and unzip it.
-
-Option B: Use Git (if you're comfortable):
 ```bash
-git clone https://github.com/YOUR_USERNAME/mc3_dashboard.git
-cd mc3_dashboard
-```
-
+# Clone the repository
+https://github.com/sarahantgan/MC3_UMSI.git
+cd MC3_UMSI
 ---
-
-### 3. Install the Dashboard
-In your terminal or command prompt, type:
+```
+### 3. Install Dependencies 
+In your terminal, type: 
 ```bash
-pip install -e .
+pip install -r requirements.txt
 ```
 This installs all the required packages (like Dash and Plotly) and sets up a shortcut to launch the dashboard.
 
@@ -79,6 +89,7 @@ The dashboard uses a file called `mc3_updated.csv` — this must remain in the r
 - Racial demographics
 - OBGYN access per 100K
 - Consultations
+- etc
 
 If you update the data, keep the same column names.
 
@@ -95,7 +106,5 @@ Let us know if you want help doing this — we’re happy to assist!
 ---
 
 ## 💬 Need Help?
-If anything is unclear or you'd like this integrated into your existing site by a developer, just reach out to Sara Hantgan (shantgan@umich.edu)
+If anything is unclear, just reach out to Sara Hantgan (shantgan@umich.edu)
 
-"""
->>>>>>> Initial upload of MC3 dashboard
